@@ -9,7 +9,7 @@ import java.util.List;
  */
 @Data
 public class DepartmentDTO {
-    private String deptId;
+    private int deptId;
     private String deptName;
     private List<DoctorDTO> doctors;
 }

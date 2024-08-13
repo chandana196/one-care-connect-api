@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entity class for Doctor table.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -16,9 +19,9 @@ public class Doctor {
 
     @Id
     private int docId;
-    private String deptId;
+    private int deptId;
     private String docName;
     private String docEducation;
-    private String docExperience;
+    private int docExperience;
     private String docBio;
 }

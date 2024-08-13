@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.aot.hint.annotation.RegisterReflection;
 
+/**
+ * Contains input params for Hospital sign in.
+ */
 @Data
 @RegisterReflection
 public class HospitalSignInInputParams {
