@@ -7,6 +7,9 @@ import lombok.Data;
  */
 @Data
 public class DoctorDTO {
-    private String docId;
+    private int docId;
     private String docName;
+    private String docEducation;
+    private int docExperience;
+    private String docBio;
 }
