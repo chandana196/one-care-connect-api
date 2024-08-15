@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Contains business logic for hospital profile.
@@ -92,10 +91,71 @@ public class HospitalService {
      * @param userId input userId
      * @return response messages as a ResponseEntity
      */
-    public ResponseEntity fetchHospitalProfile(String userId) {
-        List<ProfileResponseDTO> profileResponseDTOS = hospitalRepository.findHospitalWithDepartmentsAndDoctors(userId);
-        return new ResponseEntity<>(profileResponseDTOS, HttpStatus.OK); //TODO: fetching empty result and throwing error.
+    public ResponseEntity<HospitalDTO> fetchHospitalProfile(String userId) {
+
+        HospitalDTO hospitalDTO = new HospitalDTO();
+        try {
+            List<ProfileResponseDTO> profileResponseDTOS = hospitalRepository.findHospitalWithDepartmentsAndDoctors(userId);
+
+            if (profileResponseDTOS.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            // Initialize the HospitalDTO
+            hospitalDTO.setHospitalId(profileResponseDTOS.get(0).getUserId());
+            hospitalDTO.setHospitalName(profileResponseDTOS.get(0).getName());
+
+            // Create a map to store departments, where the key is the department ID
+            Map<Integer, DepartmentDTO> departmentMap = new HashMap<>();
+
+            // Iterate over the profileResponseDTOS to populate the HospitalDTO
+            for (ProfileResponseDTO profile : profileResponseDTOS) {
+                if (profile == null) {
+                    continue; // Skip null profiles
+                }
+
+                // Create or retrieve the department
+                if (profile.getDeptId() != null) {
+                    DepartmentDTO departmentDTO = departmentMap.get(profile.getDeptId());
+                    if (departmentDTO == null) {
+                        departmentDTO = new DepartmentDTO();
+                        departmentDTO.setDeptId(profile.getDeptId());
+                        departmentDTO.setDeptName(profile.getDeptName());
+                        departmentDTO.setDoctors(new ArrayList<>()); // Initialize the list of doctors
+                        departmentMap.put(profile.getDeptId(), departmentDTO);
+                    }
+
+                    // Create the doctor if available
+                    if (profile.getDocId() != null) {
+                        DoctorDTO doctorDTO = new DoctorDTO();
+                        doctorDTO.setDocId(profile.getDocId());
+                        doctorDTO.setDocName(profile.getDocName());
+                        doctorDTO.setDocEducation(profile.getDocEducation());
+                        doctorDTO.setDocExperience(profile.getDocExperience());
+                        doctorDTO.setDocBio(profile.getDocBio());
+
+                        // Add the doctor to the department's doctor list
+                        departmentDTO.getDoctors().add(doctorDTO);
+                    }
+                }
+            }
+
+            // Add all departments to the hospital DTO
+            List<DepartmentDTO> departments = new ArrayList<>(departmentMap.values());
+            hospitalDTO.setDepartments(departments.isEmpty() ? null : departments);
+
+            return new ResponseEntity<>(hospitalDTO, HttpStatus.OK);
+
+        } catch (Exception e) {
+            // Log the error and return a meaningful response
+//            c("Error fetching hospital profile", e);
+            ResponseMessage responseMessage = new ResponseMessage();
+            responseMessage.setResponseMessage(e.getMessage());
+            return new ResponseEntity<>(hospitalDTO,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
+
 
     /**
      * Updates the Hospital Details.

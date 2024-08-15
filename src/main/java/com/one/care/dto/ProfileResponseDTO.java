@@ -18,12 +18,11 @@ public class ProfileResponseDTO {
     private String orgType;
     private String regdNo;
     private String contactNo;
-    private int deptId;
+    private Integer deptId;
     private String deptName;
-    private int docId;
+    private Integer docId;
     private String docName;
     private String docEducation;
-    private int docExperience;
+    private Integer docExperience;
     private String docBio;
-
 }
