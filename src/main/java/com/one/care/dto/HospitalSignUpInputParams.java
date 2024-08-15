@@ -28,7 +28,7 @@ public class HospitalSignUpInputParams {
     private String orgType;
 
     @NotBlank(message = "Registration number is mandatory")
-    @Size(min = 10, max = 10, message = "Registration number must be between 3 and 50 characters")
+    @Size(min = 3, max = 50, message = "Registration number must be between 3 and 50 characters")
     private String regdNo;
 
     @NotBlank(message = "Password is mandatory")
