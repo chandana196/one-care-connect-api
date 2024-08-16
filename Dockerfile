@@ -1,5 +1,5 @@
-# Use Zulu OpenJDK as the base image
-FROM azul/zulu-openjdk:22.0.2-jdk
+# Stage 1: Build the application
+FROM azul/zulu-openjdk:22.0.2-jdk AS build
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -8,20 +8,26 @@ WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 
+# Install Maven
+RUN apt-get update && apt-get install -y maven=3.9.8
+
 # Copy the source code
 COPY src ./src
 
-# Install Maven in the container
-RUN apt-get update && apt-get install -y maven=3.9.8
+# Build the application
+RUN ./mvnw clean package -DskipTests
 
-# Package the application
-RUN ./mvnw clean package
+# Stage 2: Create the final image
+FROM azul/zulu-openjdk:22.0.2-jdk
 
-# Copy the packaged jar file to the working directory
-COPY target/one-care-connect-0.0.1-SNAPSHOT.jar app.jar
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the packaged JAR file from the build stage
+COPY --from=build /app/target/one-care-connect-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port the application runs on
 EXPOSE 8080
 
 # Run the application
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
