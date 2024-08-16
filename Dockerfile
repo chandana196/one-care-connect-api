@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y maven=3.9.8
 RUN ./mvnw clean package
 
 # Copy the packaged jar file to the working directory
-COPY target/one-care-connect-api.jar app.jar
+COPY target/one-care-connect-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port the application runs on
 EXPOSE 8080
