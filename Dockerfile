@@ -1,8 +1,14 @@
 # Stage 1: Build the application
-FROM maven:3.9.8-openjdk-22 AS build
+FROM azul/zulu-openjdk:22.0.2-jdk AS build
 
 # Set the working directory inside the container
 WORKDIR /app
+
+# Install Maven manually
+RUN apt-get update && apt-get install -y wget
+RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.8/binaries/apache-maven-3.9.8-bin.tar.gz -P /tmp
+RUN tar xzf /tmp/apache-maven-3.9.8-bin.tar.gz -C /opt
+RUN ln -s /opt/apache-maven-3.9.8/bin/mvn /usr/bin/mvn
 
 # Copy the Maven wrapper and the pom.xml
 COPY .mvn/ .mvn
