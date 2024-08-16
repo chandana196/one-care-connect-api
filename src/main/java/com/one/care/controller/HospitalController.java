@@ -1,9 +1,6 @@
 package com.one.care.controller;
 
-import com.one.care.dto.DepartmentInputParams;
-import com.one.care.dto.HospitalSignInInputParams;
-import com.one.care.dto.HospitalSignUpInputParams;
-import com.one.care.dto.HospitalUpdateInputParams;
+import com.one.care.dto.*;
 import com.one.care.service.HospitalService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,9 +77,23 @@ public class HospitalController {
         return hospitalService.addDepartment(departmentInputParams);
     }
 
+    /**
+     * Inserts new doctor.
+     * @param doctorInputParams input doctor details
+     * @return response messages as a ResponseEntity
+     */
+    @PostMapping(value = "/add-doctor", consumes = "application/json", produces = "application/json")
+    public ResponseEntity addDoctor(@Valid @RequestBody DoctorInputParams doctorInputParams) {
+        return hospitalService.addDoctor(doctorInputParams);
+    }
 
-    //edit doctor details
-
-    //Add doctor profile is not there, that is required or not?
-
+    /**
+     * Edit a doctor.
+     * @param doctorInputParams input doctor details
+     * @return response messages as a ResponseEntity
+     */
+    @PutMapping(value = "/edit-doctor", consumes = "application/json", produces = "application/json")
+    public ResponseEntity editDoctor(@Valid @RequestBody DoctorInputParams doctorInputParams) {
+        return hospitalService.editDoctor(doctorInputParams);
+    }
 }

@@ -11,5 +11,10 @@ import java.util.List;
 public class HospitalDTO {
     private String hospitalId;
     private String hospitalName;
+    private String hospitalEmail;
+    private String hospitalAddress;
+    private String hospitalType;
+    private String hospitalRegdNo;
+    private String hospitalContact;
     private List<DepartmentDTO> departments;
 }

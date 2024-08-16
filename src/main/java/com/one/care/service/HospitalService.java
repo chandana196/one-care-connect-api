@@ -2,8 +2,10 @@ package com.one.care.service;
 
 import com.one.care.dto.*;
 import com.one.care.model.Department;
+import com.one.care.model.Doctor;
 import com.one.care.model.Hospital;
 import com.one.care.repository.DepartmentRepository;
+import com.one.care.repository.DoctorRepository;
 import com.one.care.repository.HospitalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,9 @@ public class HospitalService {
 
     @Autowired
     DepartmentRepository departmentRepository;
+
+    @Autowired
+    DoctorRepository doctorRepository;
 
     /**
      * Performs Sign up for a new hospital.
@@ -104,6 +109,11 @@ public class HospitalService {
             // Initialize the HospitalDTO
             hospitalDTO.setHospitalId(profileResponseDTOS.get(0).getUserId());
             hospitalDTO.setHospitalName(profileResponseDTOS.get(0).getName());
+            hospitalDTO.setHospitalEmail(profileResponseDTOS.get(0).getEmailId());
+            hospitalDTO.setHospitalAddress(profileResponseDTOS.get(0).getAddress());
+            hospitalDTO.setHospitalType(profileResponseDTOS.get(0).getOrgType());
+            hospitalDTO.setHospitalRegdNo(profileResponseDTOS.get(0).getRegdNo());
+            hospitalDTO.setHospitalContact(profileResponseDTOS.get(0).getContactNo());
 
             // Create a map to store departments, where the key is the department ID
             Map<Integer, DepartmentDTO> departmentMap = new HashMap<>();
@@ -142,7 +152,7 @@ public class HospitalService {
 
             // Add all departments to the hospital DTO
             List<DepartmentDTO> departments = new ArrayList<>(departmentMap.values());
-            hospitalDTO.setDepartments(departments.isEmpty() ? null : departments);
+            hospitalDTO.setDepartments(departments.isEmpty() ?  new ArrayList<>() : departments);
 
             return new ResponseEntity<>(hospitalDTO, HttpStatus.OK);
 
@@ -164,15 +174,14 @@ public class HospitalService {
      */
     public ResponseEntity updateHospitalDetails(HospitalUpdateInputParams hospitalUpdateInputParams) {
         ResponseMessage responseMessage = new ResponseMessage();
-        Hospital hospital = new Hospital();
-        hospital.setUserId(hospitalUpdateInputParams.getUserId());
+        Hospital hospital = hospitalRepository.findByUserId(hospitalUpdateInputParams.getUserId());
         hospital.setName(hospitalUpdateInputParams.getHospitalName());
         hospital.setEmailId(hospitalUpdateInputParams.getEmailId());
         hospital.setAddress(hospitalUpdateInputParams.getAddress());
         hospital.setOrgType(hospitalUpdateInputParams.getOrgType());
         hospital.setRegdNo(hospitalUpdateInputParams.getRegdNo());
         hospital.setContactNo(hospitalUpdateInputParams.getContactNo());
-        hospitalRepository.save(hospital);//TODO: password is null, so this save will not work, use native query instead.
+        hospitalRepository.save(hospital);
         responseMessage.setResponseMessage("Update Hospital Data is successful.");
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
@@ -189,6 +198,41 @@ public class HospitalService {
         department.setHospitalId(departmentInputParams.getHospitalId());
         Department departmentResponse = departmentRepository.save(department);
         responseMessage.setResponseMessage("Department added successfully with Dept ID "+ departmentResponse.getDeptId());
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
+
+    /**
+     * Inserts new doctor.
+     * @param doctorInputParams input doctor details
+     * @return response messages as a ResponseEntity
+     */
+    public ResponseEntity addDoctor(DoctorInputParams doctorInputParams) {
+        Doctor doctor = new Doctor();
+        ResponseMessage responseMessage = new ResponseMessage();
+        doctor.setDeptId(doctorInputParams.getDeptId());
+        doctor.setDocName(doctorInputParams.getDocName());
+        doctor.setDocEducation(doctorInputParams.getDocEducation());
+        doctor.setDocExperience(doctorInputParams.getDocExperience());
+        doctor.setDocBio(doctorInputParams.getDocBio());
+        Doctor doctorResponse = doctorRepository.save(doctor);
+        responseMessage.setResponseMessage("Doctor added successfully with Doctor ID "+ doctorResponse.getDocId());
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
+
+    /**
+     * Edit a doctor.
+     * @param doctorInputParams input doctor details
+     * @return response messages as a ResponseEntity
+     */
+    public ResponseEntity editDoctor(DoctorInputParams doctorInputParams) {
+        Doctor doctor = doctorRepository.findByDocId(doctorInputParams.getDocId());
+        ResponseMessage responseMessage = new ResponseMessage();
+        doctor.setDocName(doctorInputParams.getDocName());
+        doctor.setDocEducation(doctorInputParams.getDocEducation());
+        doctor.setDocExperience(doctorInputParams.getDocExperience());
+        doctor.setDocBio(doctorInputParams.getDocBio());
+        Doctor doctorResponse = doctorRepository.save(doctor);
+        responseMessage.setResponseMessage("Doctor edited successfully with Doctor ID "+ doctorResponse.getDocId());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 }
