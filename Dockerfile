@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM azul/zulu-openjdk:22.0.2-jdk AS build
+FROM maven:3.9.8-openjdk-22 AS build
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -7,9 +7,6 @@ WORKDIR /app
 # Copy the Maven wrapper and the pom.xml
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
-
-# Install Maven
-RUN apt-get update && apt-get install -y maven=3.9.8
 
 # Copy the source code
 COPY src ./src
